@@ -8,23 +8,56 @@ function ProjectPage() {
   const [newPost, setNewPost] = useState({ title: '', image: null, content: '' });
   const [selectedPost, setSelectedPost] = useState(null);
 
+  const API_URL = 'https://b-site-backend-82d8c773fabb.herokuapp.com';
+
   useEffect(() => {
-    document.getElementById('create-post-button').scrollIntoView();
+    // 게시물 데이터를 서버에서 가져오기
+    fetch(`${API_URL}/api/posts`)
+      .then(response => response.json())
+      .then(data => setPosts(data))
+      .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
   const handleCreatePost = () => {
     const reader = new FileReader();
     reader.onload = () => {
-      setPosts([...posts, { ...newPost, image: reader.result }]);
-      setNewPost({ title: '', image: null, content: '' });
-      setModalOpen(false);
+      const postData = { ...newPost, image: reader.result };
+
+      // 게시물 데이터를 서버로 전송
+      fetch(`${API_URL}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+      })
+        .then(response => response.json())
+        .then(createdPost => {
+          setPosts([...posts, createdPost]);
+          setNewPost({ title: '', image: null, content: '' });
+          setModalOpen(false);
+        })
+        .catch(error => console.error('Error creating post:', error));
     };
+    
     if (newPost.image) {
       reader.readAsDataURL(newPost.image);
     } else {
-      setPosts([...posts, newPost]);
-      setNewPost({ title: '', image: null, content: '' });
-      setModalOpen(false);
+      // 이미지가 없는 경우에도 서버로 전송
+      fetch(`${API_URL}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newPost)
+      })
+        .then(response => response.json())
+        .then(createdPost => {
+          setPosts([...posts, createdPost]);
+          setNewPost({ title: '', image: null, content: '' });
+          setModalOpen(false);
+        })
+        .catch(error => console.error('Error creating post:', error));
     }
   };
 
@@ -105,3 +138,4 @@ function ProjectPage() {
 }
 
 export default ProjectPage;
+
