@@ -1,31 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
-import './ProjectPage.css'; // CSS 파일을 따로 작성하여 스타일 적용
+import './ProjectPage.css';
 
 function ProjectPage() {
   const [posts, setPosts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', image: null, content: '' });
   const [selectedPost, setSelectedPost] = useState(null);
+  const API_URL = 'https://b-web-2noo.onrender.com';
 
   useEffect(() => {
-    document.getElementById('create-post-button').scrollIntoView();
+    fetch(`${API_URL}/api/posts`)
+      .then(response => response.json())
+      .then(data => setPosts(data))
+      .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
   const handleCreatePost = () => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPosts([...posts, { ...newPost, image: reader.result }]);
-      setNewPost({ title: '', image: null, content: '' });
-      setModalOpen(false);
-    };
-    if (newPost.image) {
-      reader.readAsDataURL(newPost.image);
-    } else {
-      setPosts([...posts, newPost]);
-      setNewPost({ title: '', image: null, content: '' });
-      setModalOpen(false);
-    }
+    const formData = new FormData();
+    formData.append('title', newPost.title);
+    formData.append('image', newPost.image);
+    formData.append('content', newPost.content);
+
+    fetch(`${API_URL}/api/posts`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(post => {
+        setPosts([...posts, post]);
+        setNewPost({ title: '', image: null, content: '' });
+        setModalOpen(false);
+      })
+      .catch(error => console.error('Error creating post:', error));
   };
 
   const handleImageChange = e => {
@@ -69,7 +76,7 @@ function ProjectPage() {
       </div>
       {modalOpen && (
         <div className="modal">
-          <div className="modal-content"> {/* 추가: modal-content로 감싸서 스타일 적용 */}
+          <div className="modal-content">
             <h2>게시물 생성</h2>
             <input
               type="text"
@@ -83,9 +90,7 @@ function ProjectPage() {
               onChange={e => setNewPost({ ...newPost, content: e.target.value })}
               placeholder="내용"
             />
-            <button onClick={handleCreatePost}>
-              생성
-            </button>
+            <button onClick={handleCreatePost}>생성</button>
             <button onClick={() => setModalOpen(false)}>취소</button>
           </div>
         </div>
