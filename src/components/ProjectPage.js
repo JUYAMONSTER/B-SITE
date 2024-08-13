@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
-import './ProjectPage.css'; // CSS 파일을 따로 작성하여 스타일 적용
+import './ProjectPage.css';
+import axios from 'axios'; // axios를 import
+
+const API_URL = 'https://b-web-2noo.onrender.com'; // 백엔드 URL 설정
 
 function ProjectPage() {
   const [posts, setPosts] = useState([]);
@@ -8,57 +11,27 @@ function ProjectPage() {
   const [newPost, setNewPost] = useState({ title: '', image: null, content: '' });
   const [selectedPost, setSelectedPost] = useState(null);
 
-  const API_URL = 'https://b-site-backend-82d8c773fabb.herokuapp.com';
-
   useEffect(() => {
-    // 게시물 데이터를 서버에서 가져오기
-    fetch(`${API_URL}/api/posts`)
-      .then(response => response.json())
-      .then(data => setPosts(data))
+    axios.get(`${API_URL}/api/posts`)
+      .then(response => {
+        setPosts(response.data);
+      })
       .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
   const handleCreatePost = () => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const postData = { ...newPost, image: reader.result };
+    const formData = new FormData();
+    formData.append('title', newPost.title);
+    formData.append('image', newPost.image);
+    formData.append('content', newPost.content);
 
-      // 게시물 데이터를 서버로 전송
-      fetch(`${API_URL}/api/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(postData)
+    axios.post(`${API_URL}/api/posts`, formData)
+      .then(response => {
+        setPosts([...posts, response.data]);
+        setNewPost({ title: '', image: null, content: '' });
+        setModalOpen(false);
       })
-        .then(response => response.json())
-        .then(createdPost => {
-          setPosts([...posts, createdPost]);
-          setNewPost({ title: '', image: null, content: '' });
-          setModalOpen(false);
-        })
-        .catch(error => console.error('Error creating post:', error));
-    };
-    
-    if (newPost.image) {
-      reader.readAsDataURL(newPost.image);
-    } else {
-      // 이미지가 없는 경우에도 서버로 전송
-      fetch(`${API_URL}/api/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newPost)
-      })
-        .then(response => response.json())
-        .then(createdPost => {
-          setPosts([...posts, createdPost]);
-          setNewPost({ title: '', image: null, content: '' });
-          setModalOpen(false);
-        })
-        .catch(error => console.error('Error creating post:', error));
-    }
+      .catch(error => console.error('Error creating post:', error));
   };
 
   const handleImageChange = e => {
@@ -102,7 +75,7 @@ function ProjectPage() {
       </div>
       {modalOpen && (
         <div className="modal">
-          <div className="modal-content"> {/* 추가: modal-content로 감싸서 스타일 적용 */}
+          <div className="modal-content">
             <h2>게시물 생성</h2>
             <input
               type="text"
@@ -116,9 +89,7 @@ function ProjectPage() {
               onChange={e => setNewPost({ ...newPost, content: e.target.value })}
               placeholder="내용"
             />
-            <button onClick={handleCreatePost}>
-              생성
-            </button>
+            <button onClick={handleCreatePost}>생성</button>
             <button onClick={() => setModalOpen(false)}>취소</button>
           </div>
         </div>
@@ -138,4 +109,3 @@ function ProjectPage() {
 }
 
 export default ProjectPage;
-
