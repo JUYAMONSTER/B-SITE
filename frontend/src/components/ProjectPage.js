@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import './ProjectPage.css';
+import axios from 'axios'; // axios를 import
+
+const API_URL = 'https://b-web-2noo.onrender.com'; // 백엔드 URL 설정
 
 function ProjectPage() {
   const [posts, setPosts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', image: null, content: '' });
   const [selectedPost, setSelectedPost] = useState(null);
-  const API_URL = 'https://b-web-2noo.onrender.com';
 
   useEffect(() => {
-    fetch(`${API_URL}/api/posts`)
-      .then(response => response.json())
-      .then(data => setPosts(data))
+    axios.get(`${API_URL}/api/posts`)
+      .then(response => {
+        setPosts(response.data);
+      })
       .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
@@ -22,13 +25,9 @@ function ProjectPage() {
     formData.append('image', newPost.image);
     formData.append('content', newPost.content);
 
-    fetch(`${API_URL}/api/posts`, {
-      method: 'POST',
-      body: formData,
-    })
-      .then(response => response.json())
-      .then(post => {
-        setPosts([...posts, post]);
+    axios.post(`${API_URL}/api/posts`, formData)
+      .then(response => {
+        setPosts([...posts, response.data]);
         setNewPost({ title: '', image: null, content: '' });
         setModalOpen(false);
       })
