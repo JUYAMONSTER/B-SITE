@@ -12,7 +12,7 @@ function ProjectPage() {
   const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/board`)
+    axios.get(`${API_URL}/board`)
       .then(response => {
         setPosts(response.data);
       })
