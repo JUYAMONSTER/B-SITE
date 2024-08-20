@@ -25,7 +25,7 @@ function ProjectPage() {
     formData.append('image', newPost.image);
     formData.append('content', newPost.content);
 
-    axios.post(`${API_URL}/api/posts`, formData)
+    axios.post(`${API_URL}/board`, formData)
       .then(response => {
         setPosts([...posts, response.data]);
         setNewPost({ title: '', image: null, content: '' });
