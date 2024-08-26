@@ -3,6 +3,8 @@ import axios from 'axios';
 import Header from './Header';
 import './ProjectPage.css'; // CSS 파일을 따로 작성하여 스타일 적용
 
+const API_URL = 'https://b-web-2noo.onrender.com'; 
+
 function ProjectPage() {
   const [posts, setPosts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
