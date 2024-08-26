@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Header from './Header';
-import './ProjectPage.css';
-import axios from 'axios'; // axios를 import
-
-const API_URL = 'https://b-web-2noo.onrender.com'; // 백엔드 URL 설정
+import './ProjectPage.css'; // CSS 파일을 따로 작성하여 스타일 적용
 
 function ProjectPage() {
   const [posts, setPosts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', image: null, content: '' });
   const [selectedPost, setSelectedPost] = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API_URL}/board`)
+    document.getElementById('create-post-button').scrollIntoView();
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    axios.get('/board')
       .then(response => {
         setPosts(response.data);
       })
-      .catch(error => console.error('Error fetching posts:', error));
-  }, []);
+      .catch(error => {
+        console.error('There was an error fetching the posts!', error);
+      });
+  };
 
   const handleCreatePost = () => {
     const formData = new FormData();
@@ -25,13 +31,65 @@ function ProjectPage() {
     formData.append('image', newPost.image);
     formData.append('content', newPost.content);
 
-    axios.post(`${API_URL}/board`, formData)
+    axios.post('/board', formData)
       .then(response => {
         setPosts([...posts, response.data]);
         setNewPost({ title: '', image: null, content: '' });
         setModalOpen(false);
       })
-      .catch(error => console.error('Error creating post:', error));
+      .catch(error => {
+        console.error('There was an error creating the post!', error);
+      });
+  };
+
+  const handleEditPost = (index) => {
+    setNewPost(posts[index]);
+    setEditIndex(index);
+    setModalOpen(true);
+  };
+
+  const handleUpdatePost = () => {
+    const updatedPost = { ...newPost };
+    const formData = new FormData();
+    formData.append('title', updatedPost.title);
+    if (updatedPost.image instanceof File) {
+      formData.append('image', updatedPost.image);
+    }
+    formData.append('content', updatedPost.content);
+
+    axios.put(`/board/${posts[editIndex]._id}`, formData)
+      .then(response => {
+        const updatedPosts = posts.map((post, index) =>
+          index === editIndex ? response.data : post
+        );
+        setPosts(updatedPosts);
+        setNewPost({ title: '', image: null, content: '' });
+        setEditIndex(null);
+        setModalOpen(false);
+      })
+      .catch(error => {
+        console.error('There was an error updating the post!', error);
+      });
+  };
+
+  const handleDeletePost = (index) => {
+    const postId = posts[index]._id;
+    axios.delete(`/board/${postId}`)
+      .then(() => {
+        const updatedPosts = posts.filter((_, i) => i !== index);
+        setPosts(updatedPosts);
+      })
+      .catch(error => {
+        console.error('There was an error deleting the post!', error);
+      });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, files } = e.target;
+    setNewPost({
+      ...newPost,
+      [name]: files ? files[0] : value,
+    });
   };
 
   const handleImageChange = e => {
@@ -61,13 +119,15 @@ function ProjectPage() {
             <div className="no-posts-message">게시판을 이용해보세요!</div>
           ) : (
             posts.map((post, index) => (
-              <div className="post" key={index} onClick={() => handlePostClick(index)}>
+              <div className="post" key={post._id} onClick={() => handlePostClick(index)}>
                 <h2>{post.title}</h2>
                 {post.image && <img src={post.image} alt={post.title} />}
                 <p>
                   {truncateContent(post.content, 100)}
                   {post.content.length > 100 && <span className="read-more" onClick={() => handlePostClick(index)}> 더보기</span>}
                 </p>
+                <button onClick={(e) => {e.stopPropagation(); handleEditPost(index);}}>수정</button>
+                <button onClick={(e) => {e.stopPropagation(); handleDeletePost(index);}}>삭제</button>
               </div>
             ))
           )}
@@ -76,20 +136,24 @@ function ProjectPage() {
       {modalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h2>게시물 생성</h2>
+            <h2>{editIndex === null ? '게시물 생성' : '게시물 수정'}</h2>
             <input
               type="text"
+              name="title"
               value={newPost.title}
-              onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+              onChange={handleInputChange}
               placeholder="제목"
             />
             <input type="file" onChange={handleImageChange} />
             <textarea
+              name="content"
               value={newPost.content}
-              onChange={e => setNewPost({ ...newPost, content: e.target.value })}
+              onChange={handleInputChange}
               placeholder="내용"
             />
-            <button onClick={handleCreatePost}>생성</button>
+            <button onClick={editIndex === null ? handleCreatePost : handleUpdatePost}>
+              {editIndex === null ? '생성' : '수정'}
+            </button>
             <button onClick={() => setModalOpen(false)}>취소</button>
           </div>
         </div>
