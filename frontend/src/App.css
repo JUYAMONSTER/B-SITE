@@ -1,10 +1,27 @@
-/* 기본 스타일 */
-body, html, .App {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
+/* App.css */
+
+/* 공통 스타일 */
+.App {
+  text-align: center;
 }
 
+.hero {
+  padding: 4rem;
+  background-color: #222;
+  color: white;
+}
+
+.start-button {
+  margin-top: 1em;
+  padding: 0.5em 2em;
+  font-size: 1.2em;
+  background-color: #e60000;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* 데스크톱 네비게이션 스타일 */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -15,67 +32,76 @@ body, html, .App {
 }
 
 .logo {
-  font-size: 1.5rem;
-}
-
-.menu-toggle {
-  display: none;
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 1rem;
+  gap: 1em;
 }
 
-.nav-links li {
-  display: inline;
-}
-
-.nav-links a {
+.nav-links li a {
   color: white;
   text-decoration: none;
+  font-size: 1.2em;
 }
 
-.hero {
-  text-align: center;
-  padding: 2rem;
+/* 모바일 네비게이션 스타일 */
+.mobile-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
   background-color: #333;
   color: white;
 }
 
-.start-button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  background-color: #ff6b6b;
-  color: white;
+.menu-icon {
+  font-size: 1.8em;
+  background: none;
   border: none;
-  border-radius: 5px;
+  color: white;
   cursor: pointer;
+  display: none; /* 데스크톱에서는 숨김 */
 }
 
-/* 모바일 스타일 */
+.mobile-nav-links {
+  list-style: none;
+  display: none; /* 기본적으로 숨김 */
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 4rem;
+  left: 0;
+  right: 0;
+  padding: 1em;
+  margin: 0;
+}
+
+.mobile-nav-links li {
+  padding: 0.5em 0;
+}
+
+.mobile-nav-links li a {
+  color: white;
+  font-size: 1.2em;
+  text-decoration: none;
+}
+
+/* 반응형 스타일 */
 @media (max-width: 768px) {
+  .menu-icon {
+    display: block; /* 모바일에서는 햄버거 메뉴 아이콘 표시 */
+  }
+
   .nav-links {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 4rem;
-    right: 1rem;
-    background-color: #333;
-    padding: 1rem;
-    border-radius: 5px;
+    display: none; /* 모바일에서는 기본 메뉴 숨김 */
   }
 
-  .nav-links.open {
-    display: flex;
-  }
-
-  .menu-toggle {
-    display: block;
+  .mobile-nav-links.show {
+    display: flex; /* 모바일 메뉴 열릴 때 표시 */
   }
 }
