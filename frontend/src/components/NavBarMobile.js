@@ -15,13 +15,11 @@ function NavBarMobile() {
       <button className="menu-icon" onClick={toggleMenu}>
         ☰
       </button>
-      {isOpen && (
-        <ul className="mobile-nav-links">
-          <li><Link to="/" onClick={toggleMenu}>Main</Link></li>
-          <li><Link to="/about-us" onClick={toggleMenu}>About Us</Link></li>
-          <li><Link to="/project" onClick={toggleMenu}>Project</Link></li>
-        </ul>
-      )}
+      <ul className={`mobile-nav-links ${isOpen ? 'show' : ''}`}>
+        <li><Link to="/" onClick={toggleMenu}>Main</Link></li>
+        <li><Link to="/about-us" onClick={toggleMenu}>About Us</Link></li>
+        <li><Link to="/project" onClick={toggleMenu}>Project</Link></li>
+      </ul>
     </nav>
   );
 }
