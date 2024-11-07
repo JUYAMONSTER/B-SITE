@@ -17,9 +17,10 @@
   cursor: pointer;
 }
 
+/* 기본적으로 메뉴는 숨김 */
 .mobile-nav-links {
   list-style: none;
-  display: none; /* 기본 상태에서는 숨김 */
+  display: none; /* 기본적으로 숨김 */
   flex-direction: column;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.8);
@@ -29,6 +30,7 @@
   right: 0;
   padding: 1em;
   margin: 0;
+  z-index: 10; /* 메뉴가 다른 요소보다 위에 오도록 설정 */
 }
 
 .mobile-nav-links li {
@@ -43,5 +45,5 @@
 
 /* 메뉴가 열릴 때 보여주기 */
 .mobile-nav-links.show {
-  display: flex;
+  display: flex !important; /* 강제적으로 flex로 설정 */
 }
