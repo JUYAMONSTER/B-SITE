@@ -1,0 +1,55 @@
+/* NavBar.css 파일 */
+
+#nav {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1em;
+}
+
+.menu-icon {
+  font-size: 1.8em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+}
+
+.nav-links li {
+  padding: 0.5em 1em;
+}
+
+/* 모바일 환경에서 햄버거 메뉴 표시 */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block;
+  }
+  
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 3em;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 1em;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+}
