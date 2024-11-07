@@ -6,8 +6,10 @@ import './NavBarMobile.css';
 function NavBarMobile() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // 메뉴 상태를 토글하는 함수
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+    console.log("Menu toggled:", !isOpen); // 상태 변경 확인
   };
 
   return (
@@ -15,7 +17,6 @@ function NavBarMobile() {
       <button className="menu-icon" onClick={toggleMenu}>
         ☰
       </button>
-      {/* isOpen 상태에 따라 클래스가 추가되도록 수정 */}
       <ul className={`mobile-nav-links ${isOpen ? 'show' : ''}`}>
         <li><Link to="/" onClick={toggleMenu}>Main</Link></li>
         <li><Link to="/about-us" onClick={toggleMenu}>About Us</Link></li>
