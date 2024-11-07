@@ -32,10 +32,10 @@
   padding: 0.5em 1em;
 }
 
-/* 모바일 환경에서 햄버거 메뉴 표시 */
+/* 모바일 환경에서 메뉴 표시 */
 @media (max-width: 768px) {
   .menu-icon {
-    display: block;
+    display: block !important;
   }
   
   .nav-links {
@@ -45,11 +45,11 @@
     top: 3em;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8) !important;
     padding: 1em;
   }
 
   .nav-links.show {
-    display: flex;
+    display: flex !important;
   }
 }
