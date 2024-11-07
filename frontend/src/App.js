@@ -1,26 +1,21 @@
-import React, { useState } from 'react';
+// App.js
+import React, { useEffect, useState } from 'react';
+import NavBar from './components/NavBar';
+import NavBarMobile from './components/NavBarMobile';
 import './App.css';
 
 function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="App">
-      <nav className="navbar">
-        <h1 className="logo">The Branches</h1>
-        <button className="menu-toggle" onClick={toggleMenu}>
-          ☰
-        </button>
-        <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-          <li><a href="#main">Main</a></li>
-          <li><a href="#about">About Us</a></li>
-          <li><a href="#project">Project</a></li>
-        </ul>
-      </nav>
+      {isMobile ? <NavBarMobile /> : <NavBar />}
       <header className="hero">
         <h2>[The Branches]</h2>
         <p>Branches는 순천대학교 인공지능공학부 전공 동아리로...</p>
